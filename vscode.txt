@@ -1,0 +1,89 @@
+login.component.html
+<h2>Login</h2>
+<form>
+  <div class="form-group">
+    <label for="username">Username</label>
+    <input [(ngModel)]="loginuser.userName" class="form-control" id="username" 
+    placeholder="username" name="username" required/>
+  </div>
+
+    <div class="form-group">
+      <label for="password">password</label>
+      <input type="password" [(ngModel)]="loginuser.password" class="form-control" 
+      id="password" placeholder="password" name="password" required/>
+    </div>
+
+    <div class="form-group">
+      <button class="btn btn-success" (click)="loginUser()">Login</button>
+    </div>
+</form>
+
+
+
+Login.ts
+export class Login {
+    constructor(
+        public userName?: String,
+        public password?: String)
+        {
+            
+        }
+}
+
+
+
+login.component.ts
+import { Component, OnInit, Inject } from '@angular/core';
+import { Login } from './login';
+import { LoginService } from './login-service';
+
+@Component({
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css']
+})
+export class LoginComponent implements OnInit {
+  
+
+  constructor(private rs: LoginService) { }
+
+  ngOnInit() {
+  }
+
+  loginuser : Login = new Login();
+   
+  loginUser(){
+    let url='http://192.168.100.63:8181/logindto/userlogin';
+    this.rs.retriveFromServer(url,this.loginuser).subscribe(data=>{
+     console.log(data['status']);
+
+    });
+    
+      
+  }
+
+}
+
+
+
+
+Login-service.ts
+import { Injectable } from "@angular/core";
+import { HttpClient} from "@angular/common/http";
+import { Observable } from 'rxjs';
+import { Login } from './login';
+
+@Injectable()
+export class LoginService{
+    
+    loginusers: Login[];
+    
+    constructor(private http:HttpClient) {
+
+    }
+    retriveFromServer(url,loginuser) :Observable<String>{
+
+      return this.http.post<String>(url,loginuser);
+      
+    }
+}
